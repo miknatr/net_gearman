@@ -228,7 +228,7 @@ class Net_Gearman_Worker
      * @see Net_Gearman_Connection::send(), Net_Gearman_Connection::connect()
      * @see Net_Gearman_Worker::doWork(), Net_Gearman_Worker::addAbility()
      */
-    public function beginWork($monitor = null)
+    public function beginWork($monitor = null, $timeout = null)
     {
         if (!is_callable($monitor)) {
             $monitor = array($this, 'stopWork');
@@ -239,8 +239,9 @@ class Net_Gearman_Worker
         $working   = true;
         $lastJob   = time();
         $retryTime = 5;
+        $startTime = time();
 
-        while ($working) {
+        while ($working && (is_null($timeout) || (time() - $startTime <= $timeout))) {
             $sleep = true;
             $currentTime = time();
 
